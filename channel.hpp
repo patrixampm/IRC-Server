@@ -1,0 +1,88 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   channel.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ppeckham <ppeckham@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/06 13:09:27 by ppeckham          #+#    #+#             */
+/*   Updated: 2025/10/08 15:50:50 by ppeckham         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef CHANNEL_HPP
+# define CHANNEL_HPP
+
+# include <iostream>
+# include <sstream>
+# include <string.h>
+# include <fcntl.h>
+# include <sys/socket.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <cstdio>
+# include <poll.h>
+# include <list>
+# include <vector>
+# include <stdint.h>
+
+class	Client;
+
+class CommandRouter;
+
+class	Channel
+{
+
+private:
+	std::string			_name;
+	std::string			_topic;
+	std::string			_key;
+	size_t				_client_limit;
+
+	bool				_invite_only;
+	bool				_topic_restricted;
+	bool				_has_key;
+	bool				_has_client_limit;
+
+	std::list<Client*>	_client_list;
+	std::list<Client*>	_operators;
+	std::list<Client*>	_invited_clients;
+
+public:
+	Channel( void );
+	Channel( const Channel& other );
+	Channel& operator=( const Channel& other );
+	~Channel( void );
+
+	Channel( const std::string& name );
+
+	bool		addClient( Client& client, const std::string& key );
+	bool		removeClient( const Client& client );
+	bool		hasClient( const Client& client );
+	std::string	getName( void ) const;
+	size_t		getClientCount( void ) const;
+	size_t		getOperatorCount( void ) const;
+	bool		addOperator( Client& client );
+	bool		removeOperator( const Client& client );
+	void		addInvitedClient( Client& client );
+	bool		removeInvitedClient( const Client& client );
+	bool		isOperator( const Client& client );
+	bool		isInvitedClient( const Client& client );
+	bool		setTopic( std::string& topic, Client& client );
+	std::string	getTopic( void ) const;
+	bool		kickClient( Client& kicker, Client& target, std::string reason );
+	bool		inviteClient( Client & inviter, Client& client );
+	bool		setMode( char mode, std::string param, Client& requester, Client& target );
+	bool		removeMode( char mode, Client& requester, Client& target );
+	bool		validateKey( const std::string& key );
+	bool		isInviteOnly( void );
+	bool		isTopicRestricted( void );
+	bool		isFull( void );
+	bool		broadcastMessage( const std::string message, Client& requester );
+	bool		canJoin( Client& client, const std::string& key );
+	std::string	getModeString( void );
+	std::list<Client*>	getClientList( void ) const;
+
+};
+
+#endif
