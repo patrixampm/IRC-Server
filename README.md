@@ -24,6 +24,7 @@ Then:
 PASS <password>
 NICK <your_nickname>
 USER <your_username> 0 * <your_realname>
+``
 
 ## Clean
 
